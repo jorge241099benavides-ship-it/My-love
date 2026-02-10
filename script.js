@@ -1,5 +1,5 @@
 /* ===================== COUNTER ===================== */
-const startDate = new Date("2023-12-03T00:00:00"); // AJUSTÁ LA FECHA REAL
+const startDate = new Date("2023-12-03T00:00:00"); // CAMBIÁ AQUÍ LA FECHA REAL
 
 const counterEl = document.getElementById("counter");
 
@@ -21,7 +21,7 @@ function updateCounter() {
 setInterval(updateCounter, 1000);
 updateCounter();
 
-/* ================= HEART FIREWORK ================= */
+/* ================= HEART FIREWORK AUTO ================= */
 const canvas = document.getElementById("heartCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -45,27 +45,26 @@ function heartShape(t) {
   };
 }
 
-function createFirework() {
-  particles = [];
+function spawnFirework() {
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const scale = Math.min(canvas.width, canvas.height) / 25;
+  const scale = Math.min(canvas.width, canvas.height) / 22;
 
-  for (let i = 0; i < Math.PI * 2; i += 0.08) {
-    const pos = heartShape(i);
+  for (let i = 0; i < Math.PI * 2; i += 0.06) {
+    const p = heartShape(i);
     particles.push({
       x: centerX,
       y: centerY,
-      vx: pos.x * scale * 0.03,
-      vy: -pos.y * scale * 0.03,
-      life: 100,
+      vx: p.x * scale * 0.025,
+      vy: -p.y * scale * 0.025,
+      life: 120,
       alpha: 1
     });
   }
 }
 
-createFirework();
-setInterval(createFirework, 2200);
+setInterval(spawnFirework, 1800);
+spawnFirework();
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,16 +73,12 @@ function animate() {
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
-    p.alpha = p.life / 100;
+    p.alpha = p.life / 120;
 
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 77, 109, ${p.alpha})`;
+    ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 60, 100, ${p.alpha})`;
     ctx.fill();
   });
 
-  particles = particles.filter(p => p.life > 0);
-  requestAnimationFrame(animate);
-}
-
-animate();
+  particles = particles.f
