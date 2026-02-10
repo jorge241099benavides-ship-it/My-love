@@ -63,18 +63,16 @@ function createFirework() {
 }
 
 function animate() {
-  // Fondo rosado translúcido (NO negro)
-  ctx.fillStyle = "rgba(122, 15, 43, 0.15)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach(p => {
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
 
-    ctx.fillStyle = "rgba(255, 77, 109, 0.9)";
+    ctx.fillStyle = "rgba(255, 77, 109, 0.95)";
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 2.3, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
     ctx.fill();
   });
 
