@@ -2,180 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Valentine ❤️</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    :root {
-      --bg: #0f0b14;
-      --pink: #ff4d6d;
-      --soft-pink: #ffb3c1;
-      --text: #f8f8f8;
-      --muted: #c9c9c9;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Segoe UI", system-ui, sans-serif;
-    }
-
-    body {
-      height: 100vh;
-      background: radial-gradient(circle at top, #2a1228, var(--bg));
-      color: var(--text);
-      overflow: hidden;
-    }
-
-    /* Layout */
-    .container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      height: 100%;
-    }
-
-    /* LEFT SIDE */
-    .left {
-      position: relative;
-      padding: 40px;
-    }
-
-    .quote {
-      position: absolute;
-      top: 40px;
-      left: 40px;
-      max-width: 420px;
-      font-size: 2.2rem;
-      font-weight: 600;
-      color: var(--soft-pink);
-      line-height: 1.2;
-    }
-
-    .counter-box {
-      position: absolute;
-      bottom: 40px;
-      left: 40px;
-      font-size: 1rem;
-      color: var(--muted);
-    }
-
-    .counter-box span {
-      display: block;
-      margin-top: 8px;
-      font-size: 1.2rem;
-      color: var(--text);
-      font-weight: 500;
-    }
-
-    /* RIGHT SIDE */
-    .right {
-      position: relative;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+  <title>Valentine Love</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+
   <div class="container">
-    <!-- LEFT -->
+    <!-- LEFT SIDE -->
     <div class="left">
-      <div class="quote">
-        I would choose you<br>in every life
+      <div class="phrase">
+        I would choose you in every life
       </div>
 
       <div class="counter-box">
-        We've loved each other since
-        <span id="counter">Loading...</span>
+        <span class="counter-title">We've loved each other since</span>
+        <span id="counter"></span>
       </div>
     </div>
 
-    <!-- RIGHT -->
+    <!-- RIGHT SIDE -->
     <div class="right">
       <canvas id="tree"></canvas>
     </div>
   </div>
 
-  <script>
-    /* =========================
-       LOVE COUNTER
-    ========================== */
-    const startDate = new Date("2023-12-03T00:00:00"); // ⬅️ CAMBIA ESTA FECHA
-
-    function updateCounter() {
-      const now = new Date();
-      let diff = now - startDate;
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      document.getElementById("counter").textContent =
-        `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-    }
-
-    setInterval(updateCounter, 1000);
-    updateCounter();
-
-    /* =========================
-       HEART TREE (CANVAS)
-    ========================== */
-    const canvas = document.getElementById("tree");
-    const ctx = canvas.getContext("2d");
-
-    function resize() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-
-    window.addEventListener("resize", resize);
-    resize();
-
-    let hearts = [];
-
-    function drawHeart(x, y, size, opacity) {
-      ctx.save();
-      ctx.globalAlpha = opacity;
-      ctx.fillStyle = "#ff4d6d";
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.bezierCurveTo(x, y - size, x - size * 2, y - size, x - size * 2, y);
-      ctx.bezierCurveTo(x - size * 2, y + size * 2, x, y + size * 3, x, y + size * 4);
-      ctx.bezierCurveTo(x, y + size * 3, x + size * 2, y + size * 2, x + size * 2, y);
-      ctx.bezierCurveTo(x + size * 2, y - size, x, y - size, x, y);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // spawn hearts from the root
-      hearts.push({
-        x: canvas.width / 2 + (Math.random() * 20 - 10),
-        y: canvas.height - 10,
-        size: Math.random() * 3 + 2,
-        speed: Math.random() * 0.8 + 0.4,
-        opacity: 1
-      });
-
-      hearts.forEach(h => {
-        h.y -= h.speed;
-        h.opacity -= 0.002;
-        drawHeart(h.x, h.y, h.size, h.opacity);
-      });
-
-      hearts = hearts.filter(h => h.opacity > 0);
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
