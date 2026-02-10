@@ -1,5 +1,5 @@
 /* ===================== COUNTER ===================== */
-const startDate = new Date("2023-12-03T00:00:00"); // CAMBIÁ AQUÍ LA FECHA REAL
+const startDate = new Date("2023-12-03T00:00:00"); // AJUSTÁ TU FECHA REAL
 
 const counterEl = document.getElementById("counter");
 
@@ -21,16 +21,23 @@ function updateCounter() {
 setInterval(updateCounter, 1000);
 updateCounter();
 
-/* ================= HEART FIREWORK AUTO ================= */
+/* ================= HEART FIREWORK (FIXED) ================= */
 const canvas = document.getElementById("heartCanvas");
 const ctx = canvas.getContext("2d");
 
-function resizeCanvas() {
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
+function forceResizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
 }
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+
+window.addEventListener("resize", forceResizeCanvas);
+
+/* Esperar a que el layout esté listo */
+setTimeout(() => {
+  forceResizeCanvas();
+  spawnFirework();
+}, 200);
 
 let particles = [];
 
@@ -46,25 +53,26 @@ function heartShape(t) {
 }
 
 function spawnFirework() {
+  if (canvas.width === 0 || canvas.height === 0) return;
+
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
-  const scale = Math.min(canvas.width, canvas.height) / 22;
+  const scale = Math.min(canvas.width, canvas.height) / 20;
 
-  for (let i = 0; i < Math.PI * 2; i += 0.06) {
+  for (let i = 0; i < Math.PI * 2; i += 0.05) {
     const p = heartShape(i);
     particles.push({
       x: centerX,
       y: centerY,
-      vx: p.x * scale * 0.025,
-      vy: -p.y * scale * 0.025,
-      life: 120,
+      vx: p.x * scale * 0.02,
+      vy: -p.y * scale * 0.02,
+      life: 140,
       alpha: 1
     });
   }
 }
 
-setInterval(spawnFirework, 1800);
-spawnFirework();
+setInterval(spawnFirework, 2000);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -73,12 +81,16 @@ function animate() {
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
-    p.alpha = p.life / 120;
+    p.alpha = p.life / 140;
 
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255, 60, 100, ${p.alpha})`;
+    ctx.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 50, 90, ${p.alpha})`;
     ctx.fill();
   });
 
-  particles = particles.f
+  particles = particles.filter(p => p.life > 0);
+  requestAnimationFrame(animate);
+}
+
+animate();
