@@ -2,30 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Valentine Love</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Valentine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      height: 100vh;
+      overflow: hidden;
+      color: #7a1c2c;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 40px;
+    }
+
+    /* Frase superior izquierda */
+    .top-left {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      font-size: 26px;
+      font-weight: 600;
+      max-width: 40%;
+    }
+
+    /* Contador inferior izquierdo */
+    .bottom-left {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .counter {
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    /* Canvas fuegos artificiales */
+    canvas {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: transparent; /* CLAVE: sin negro */
+    }
+
+    @media (max-width: 768px) {
+      canvas {
+        width: 100%;
+        height: 60%;
+        bottom: 0;
+        top: auto;
+      }
+
+      .top-left {
+        font-size: 22px;
+        max-width: 90%;
+      }
+    }
+  </style>
 </head>
+
 <body>
-
   <div class="container">
-    <!-- LEFT SIDE -->
-    <div class="left">
-      <div class="phrase">
-        I would choose you in every life
-      </div>
-
-      <div class="counter-box">
-        <span class="counter-title">We've loved each other since</span>
-        <span id="counter"></span>
-      </div>
+    <div class="top-left">
+      I would choose you in every life
     </div>
 
-    <!-- RIGHT SIDE -->
-    <div class="right">
-      <canvas id="tree"></canvas>
+    <div class="bottom-left">
+      We've loved each other since<br />
+      <span class="counter" id="counter"></span>
     </div>
+
+    <canvas id="canvas"></canvas>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    /* ======================
+       CONTADOR
+    ====================== */
+    const startDate = new Date("2022-02-14T00:00:00");
+
+    function updateCounter() {
+      const now = new Date();
+      let diff = Math.floor((now - startDate) / 1000);
+
+      const days = Math.floor(diff / 86400);
+      diff %= 86400;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const minutes = Math.floor(diff / 60);
+      const seconds = diff % 60;
+
+      document.getElementById("counter").textContent =
+        `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+    }
+
+    setInterval(updateCounter, 1000);
+    updateCounter();
+
+    /* ======================
+       FUEGOS ARTIFICIALES CORAZÓN
+    ====================== */
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    class Particle {
+      constructor(x, y, angle, speed, color) {
+        this.x = x;
+        this.y = y;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.color = color;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.02;
+        this.alpha -= 0.015;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    let particles = [];
+
+    function heartFirework(x, y) {
+      const color = "#ff3b6f";
+      for (let t = 0; t < Math.PI * 2; t += 0.15) {
+        const r =
+          16 * Math.pow(Math.sin(t), 3);
+        const px =
+          r * Math.cos(t) -
+          13 * Math.cos(2 * t) -
+          5 * Math.cos(3 * t) -
+          Math.cos(4 * t);
+        const py =
+          -(13 * Math.sin(t) -
+            5 * Math.sin(2 * t) -
+            2 * Math.sin(3 * t) -
+            Math.sin(4 * t));
+
+        const angle = Math.atan2(py, px);
+        const speed = Math.random() * 1.8 + 1.5;
+
+        particles.push(
+          new Particle(x, y, angle, speed, color)
+        );
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles = particles.filter(p => p.alpha > 0);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    setInterval(() => {
+      const x = canvas.width / 2;
+      const y = canvas.height / 2 + Math.random() * 80 - 40;
+      heartFirework(x, y);
+    }, 1800);
+  </script>
 </body>
 </html>
