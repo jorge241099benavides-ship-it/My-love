@@ -2,195 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Valentine</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", sans-serif;
-    }
-
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-      display: flex;
-      color: #7a0f2b;
-      overflow: hidden;
-    }
-
-    /* LEFT SIDE */
-    .left {
-      width: 40%;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .quote {
-      font-size: 26px;
-      font-weight: 600;
-    }
-
-    .counter {
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .counter span {
-      font-weight: bold;
-      color: #a4002c;
-    }
-
-    /* RIGHT SIDE */
-    .right {
-      width: 60%;
-      position: relative;
-    }
-
-    canvas {
-      position: absolute;
-      inset: 0;
-      background: transparent; /* CLAVE: nada de negro */
-    }
-
-    @media (max-width: 900px) {
-      body {
-        flex-direction: column;
-      }
-
-      .left, .right {
-        width: 100%;
-        height: 50%;
-      }
-    }
-  </style>
+  <title>Valentine Love</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-  <!-- LEFT -->
-  <div class="left">
-    <div class="quote">
-      I would choose you in every life
+  <!-- GLOBAL BACKGROUND -->
+  <div class="background"></div>
+
+  <div class="container">
+    <!-- LEFT -->
+    <div class="left">
+      <div class="phrase">I would choose you in every life</div>
+
+      <div class="counter-box">
+        <span class="counter-title">We've loved each other since</span>
+        <div id="counter"></div>
+      </div>
     </div>
 
-    <div class="counter">
-      We've loved each other since<br />
-      <span id="time"></span>
+    <!-- RIGHT -->
+    <div class="right">
+      <canvas id="heartCanvas"></canvas>
     </div>
   </div>
 
-  <!-- RIGHT -->
-  <div class="right">
-    <canvas id="fireworks"></canvas>
-  </div>
-
-  <script>
-    /* =========================
-       COUNTER – FIXED DATE
-    ========================== */
-
-    // 🔴 CAMBIA ESTA FECHA A LA REAL
-    const startDate = new Date(2022, 12, 03, 0, 0, 0); 
-    // NOTA: mes 5 = junio (JS empieza en 0)
-
-    function updateCounter() {
-      const now = new Date();
-      let diff = Math.floor((now - startDate) / 1000);
-
-      if (diff < 0) diff = 0;
-
-      const days = Math.floor(diff / 86400);
-      diff %= 86400;
-      const hours = Math.floor(diff / 3600);
-      diff %= 3600;
-      const minutes = Math.floor(diff / 60);
-      const seconds = diff % 60;
-
-      document.getElementById("time").textContent =
-        `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-    }
-
-    setInterval(updateCounter, 1000);
-    updateCounter();
-
-    /* =========================
-       HEART FIREWORKS
-    ========================== */
-
-    const canvas = document.getElementById("fireworks");
-    const ctx = canvas.getContext("2d");
-
-    function resize() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-
-    window.addEventListener("resize", resize);
-    resize();
-
-    const particles = [];
-
-    function heartShape(t) {
-      const x = 16 * Math.pow(Math.sin(t), 3);
-      const y =
-        13 * Math.cos(t) -
-        5 * Math.cos(2 * t) -
-        2 * Math.cos(3 * t) -
-        Math.cos(4 * t);
-      return { x, y };
-    }
-
-    function explodeHeart(x, y) {
-      for (let i = 0; i < 120; i++) {
-        const t = (Math.PI * 2 * i) / 120;
-        const p = heartShape(t);
-
-        particles.push({
-          x,
-          y,
-          vx: p.x * 0.15,
-          vy: -p.y * 0.15,
-          life: 100,
-          color: `hsl(${330 + Math.random() * 20}, 80%, 60%)`
-        });
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.fill();
-
-        if (p.life <= 0) {
-          particles.splice(i, 1);
-        }
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    setInterval(() => {
-      const x = canvas.width * (0.5 + (Math.random() - 0.5) * 0.3);
-      const y = canvas.height * (0.6 + Math.random() * 0.2);
-      explodeHeart(x, y);
-    }, 1600);
-
-    animate();
-  </script>
-
+  <script src="script.js"></script>
 </body>
 </html>
