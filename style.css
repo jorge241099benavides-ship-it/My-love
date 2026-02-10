@@ -7,7 +7,7 @@
 
 body {
   height: 100vh;
-  background: linear-gradient(135deg, #7a0f2b, #c9184a);
+  background: #7a0f2b; /* color base, NO gradient */
   color: #fff;
   overflow: hidden;
 }
@@ -20,8 +20,9 @@ body {
 /* LEFT SIDE */
 .left {
   width: 40%;
-  padding: 40px;
   position: relative;
+  padding: 40px;
+  background: linear-gradient(135deg, #7a0f2b, #c9184a);
 }
 
 .phrase {
