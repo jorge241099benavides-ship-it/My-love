@@ -71,3 +71,6 @@ canvas {
     opacity: 1;
   }
 }
+canvas {
+  background: transparent;
+}
