@@ -18,13 +18,13 @@ setInterval(updateCounter, 1000);
 updateCounter();
 
 
-/* ========= CANVAS SETUP ========= */
+/* ========= CANVAS ========= */
 const canvas = document.getElementById("tree");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
@@ -33,47 +33,54 @@ window.addEventListener("resize", resizeCanvas);
 /* ========= HEART FIREWORK ========= */
 let particles = [];
 
-function createHeartFirework() {
+function heartEquation(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
+    y:
+      13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t)
+  };
+}
+
+function createFirework() {
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
 
   for (let i = 0; i < 120; i++) {
-    const angle = (Math.PI * 2 * i) / 120;
-    const r = 12 * (1 - Math.sin(angle));
+    const t = (Math.PI * 2 * i) / 120;
+    const h = heartEquation(t);
 
     particles.push({
       x: cx,
       y: cy,
-      vx: Math.cos(angle) * r * 0.15,
-      vy: Math.sin(angle) * r * 0.15,
+      vx: h.x * 0.06,
+      vy: -h.y * 0.06,
       life: 100
     });
   }
 }
 
-function drawHeartParticle(p) {
-  ctx.fillStyle = "rgba(255, 77, 109, 0.9)";
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
-  ctx.fill();
-}
-
 function animate() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+  // Fondo rosado translúcido (NO negro)
+  ctx.fillStyle = "rgba(122, 15, 43, 0.15)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   particles.forEach(p => {
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
-    drawHeartParticle(p);
+
+    ctx.fillStyle = "rgba(255, 77, 109, 0.9)";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 2.3, 0, Math.PI * 2);
+    ctx.fill();
   });
 
   particles = particles.filter(p => p.life > 0);
-
   requestAnimationFrame(animate);
 }
 
-/* ========= START ========= */
-setInterval(createHeartFirework, 1300);
+setInterval(createFirework, 1400);
 animate();
