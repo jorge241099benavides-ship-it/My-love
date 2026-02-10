@@ -1,5 +1,5 @@
-/* ===== COUNTER ===== */
-const startDate = new Date("2023-12-03T00:00:00"); // CAMBIÁ AQUÍ LA FECHA REAL
+/* ===================== COUNTER ===================== */
+const startDate = new Date("2023-12-03T00:00:00"); // AJUSTÁ LA FECHA REAL
 
 const counterEl = document.getElementById("counter");
 
@@ -21,7 +21,7 @@ function updateCounter() {
 setInterval(updateCounter, 1000);
 updateCounter();
 
-/* ===== HEART FIREWORK ===== */
+/* ================= HEART FIREWORK ================= */
 const canvas = document.getElementById("heartCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -32,37 +32,57 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-let t = 0;
+let particles = [];
 
-function drawHeart(x, y, size) {
-  ctx.beginPath();
-  for (let i = 0; i < Math.PI * 2; i += 0.05) {
-    const px =
-      size * 16 * Math.pow(Math.sin(i), 3) + x;
-    const py =
-      -size *
-        (13 * Math.cos(i) -
-          5 * Math.cos(2 * i) -
-          2 * Math.cos(3 * i) -
-          Math.cos(4 * i)) +
-      y;
-    ctx.lineTo(px, py);
-  }
-  ctx.strokeStyle = "rgba(255, 77, 109, 0.8)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+function heartShape(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
+    y:
+      13 * Math.cos(t) -
+      5 * Math.cos(2 * t) -
+      2 * Math.cos(3 * t) -
+      Math.cos(4 * t)
+  };
 }
+
+function createFirework() {
+  particles = [];
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const scale = Math.min(canvas.width, canvas.height) / 25;
+
+  for (let i = 0; i < Math.PI * 2; i += 0.08) {
+    const pos = heartShape(i);
+    particles.push({
+      x: centerX,
+      y: centerY,
+      vx: pos.x * scale * 0.03,
+      vy: -pos.y * scale * 0.03,
+      life: 100,
+      alpha: 1
+    });
+  }
+}
+
+createFirework();
+setInterval(createFirework, 2200);
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
-  const size = 10 + Math.sin(t) * 2;
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    p.alpha = p.life / 100;
 
-  drawHeart(centerX, centerY, size);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 77, 109, ${p.alpha})`;
+    ctx.fill();
+  });
 
-  t += 0.03;
+  particles = particles.filter(p => p.life > 0);
   requestAnimationFrame(animate);
 }
 
