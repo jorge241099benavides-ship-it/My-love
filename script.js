@@ -3,7 +3,7 @@ const startDate = new Date("2023-12-03T00:00:00"); // CAMBIA ESTA FECHA
 
 function updateCounter() {
   const now = new Date();
-  let diff = now - startDate;
+  const diff = now - startDate;
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
@@ -23,51 +23,52 @@ const canvas = document.getElementById("tree");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-let hearts = [];
+let particles = [];
+let growth = 0;
 
 function drawHeart(x, y, size, opacity) {
   ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(size, size);
   ctx.globalAlpha = opacity;
   ctx.fillStyle = "#ff4d6d";
-
   ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.bezierCurveTo(-1, -1, -3, 1, 0, 4);
-  ctx.bezierCurveTo(3, 1, 1, -1, 0, 0);
+
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x - size, y - size, x - size * 2, y + size / 2, x, y + size * 2);
+  ctx.bezierCurveTo(x + size * 2, y + size / 2, x + size, y - size, x, y);
+
   ctx.fill();
   ctx.restore();
 }
 
-function animateTree() {
+function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (Math.random() < 0.3) {
-    hearts.push({
-      x: canvas.width / 2 + (Math.random() * 40 - 20),
-      y: canvas.height,
-      size: Math.random() * 4 + 2,
-      speed: Math.random() * 1.2 + 0.5,
+  // CRECIMIENTO DEL TRONCO
+  if (growth < canvas.height * 0.75) {
+    growth += 1.2;
+
+    particles.push({
+      x: canvas.width / 2 + (Math.random() * 30 - 15),
+      y: canvas.height - growth,
+      size: Math.random() * 6 + 6,
       opacity: 1
     });
   }
 
-  hearts.forEach(h => {
-    h.y -= h.speed;
-    h.opacity -= 0.002;
-    drawHeart(h.x, h.y, h.size, h.opacity);
+  particles.forEach(p => {
+    drawHeart(p.x, p.y, p.size, p.opacity);
+    p.opacity -= 0.002;
   });
 
-  hearts = hearts.filter(h => h.opacity > 0);
+  particles = particles.filter(p => p.opacity > 0);
 
-  requestAnimationFrame(animateTree);
+  requestAnimationFrame(animate);
 }
 
-animateTree();
+animate();
