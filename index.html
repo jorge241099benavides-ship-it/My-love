@@ -8,66 +8,60 @@
   <style>
     :root {
       --bg: #ffd6e0;
-      --text-main: #a4003a;
-      --text-soft: #c2185b;
+      --main: #a4003a;
+      --soft: #c2185b;
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       background: var(--bg);
-      color: var(--text-main);
-      min-height: 100vh;
+      color: var(--main);
+      height: 100svh; /* CLAVE PARA MÓVIL */
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       align-items: center;
       padding: 16px;
       overflow: hidden;
     }
 
-    /* TOP TEXT */
     .top-text {
-      width: 100%;
       text-align: center;
       font-size: clamp(1.2rem, 4vw, 1.8rem);
       font-weight: 600;
-      margin-top: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
     }
 
-    /* CENTER ANIMATION */
     .animation-container {
       flex: 1;
       width: 100%;
       display: flex;
-      justify-content: center;
       align-items: center;
-      position: relative;
+      justify-content: center;
     }
 
     canvas {
       width: 100%;
-      max-width: 420px;
+      max-width: 380px;
       aspect-ratio: 1 / 1;
-      background: transparent;
     }
 
-    /* BOTTOM */
     .bottom {
-      width: 100%;
       text-align: center;
-      margin-bottom: 10px;
+      margin-top: 12px;
+      padding-bottom: 8px;
     }
 
     .since {
       font-size: 0.95rem;
-      color: var(--text-soft);
-      margin-bottom: 6px;
+      color: var(--soft);
+      margin-bottom: 4px;
     }
 
     .counter {
@@ -79,17 +73,14 @@
 
 <body>
 
-  <!-- TOP -->
   <div class="top-text">
     I would choose you in every life
   </div>
 
-  <!-- CENTER -->
   <div class="animation-container">
     <canvas id="fireworks"></canvas>
   </div>
 
-  <!-- BOTTOM -->
   <div class="bottom">
     <div class="since">We've loved each other since</div>
     <div class="counter" id="counter"></div>
@@ -97,7 +88,7 @@
 
   <script>
     /* ===== COUNTER ===== */
-    const startDate = new Date("2023-12-03T00:00:00"); // AJUSTÁ ESTA FECHA
+    const startDate = new Date("2023-12-03T00:00:00");
 
     function updateCounter() {
       const now = new Date();
@@ -117,39 +108,40 @@
     setInterval(updateCounter, 1000);
     updateCounter();
 
-    /* ===== FIREWORKS HEART ===== */
+    /* ===== HEART FIREWORK ===== */
     const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
 
-    function resize() {
-      canvas.width = canvas.offsetWidth * devicePixelRatio;
-      canvas.height = canvas.offsetHeight * devicePixelRatio;
-      ctx.scale(devicePixelRatio, devicePixelRatio);
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    resize();
-    window.addEventListener("resize", resize);
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
-    function heartPoints(t) {
+    function heart(t) {
       return {
-        x: 16 * Math.pow(Math.sin(t), 3),
-        y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
+        x: 16 * Math.sin(t) ** 3,
+        y: -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t))
       };
     }
 
     let particles = [];
 
-    function spawnHeart() {
+    function spawn() {
       particles = [];
       for (let i = 0; i < 160; i++) {
         const t = Math.random() * Math.PI * 2;
-        const p = heartPoints(t);
+        const p = heart(t);
         particles.push({
-          x: canvas.offsetWidth / 2,
-          y: canvas.offsetHeight / 2,
+          x: canvas.clientWidth / 2,
+          y: canvas.clientHeight / 2,
           vx: p.x * 0.6,
           vy: p.y * 0.6,
-          life: 80
+          life: 90
         });
       }
     }
@@ -164,17 +156,16 @@
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(216, 27, 96, 0.8)";
+        ctx.fillStyle = "rgba(216, 27, 96, 0.85)";
         ctx.fill();
       });
 
       particles = particles.filter(p => p.life > 0);
-
       requestAnimationFrame(animate);
     }
 
-    spawnHeart();
-    setInterval(spawnHeart, 1600);
+    spawn();
+    setInterval(spawn, 1600);
     animate();
   </script>
 
