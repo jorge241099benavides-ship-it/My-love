@@ -58,11 +58,14 @@ body {
 .right {
   width: 60%;
   position: relative;
+  background: linear-gradient(135deg, #7a0f2b, #c9184a);
 }
 
+/* CANVAS */
 canvas {
   width: 100%;
   height: 100%;
+  background: transparent;
 }
 
 /* ANIMATIONS */
@@ -70,7 +73,4 @@ canvas {
   to {
     opacity: 1;
   }
-}
-canvas {
-  background: transparent;
 }
