@@ -2,220 +2,181 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Valentine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine Love</title>
 
   <style>
     :root {
-      --pink: #ff4d6d;
-      --soft-pink: #ffe6eb;
-      --red: #d90429;
-      --text-dark: #590d22;
+      --bg: #ffd6e0;
+      --text-main: #a4003a;
+      --text-soft: #c2185b;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "Segoe UI", system-ui, sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #ffe6eb, #fff0f5);
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .container {
-      display: flex;
-      height: 100%;
-      padding: 20px;
-    }
-
-    /* LEFT SIDE */
-    .left {
-      flex: 1;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      color: var(--text-dark);
+      align-items: center;
+      padding: 16px;
+      overflow: hidden;
     }
 
-    .quote {
-      font-size: 1.4rem;
+    /* TOP TEXT */
+    .top-text {
+      width: 100%;
+      text-align: center;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
       font-weight: 600;
+      margin-top: 10px;
     }
 
-    .counter {
-      font-size: 1rem;
-      line-height: 1.5;
-    }
-
-    .counter span {
-      font-weight: 700;
-      color: var(--red);
-    }
-
-    /* RIGHT SIDE */
-    .right {
+    /* CENTER ANIMATION */
+    .animation-container {
       flex: 1;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: relative;
     }
 
     canvas {
       width: 100%;
-      height: 100%;
-      display: block;
+      max-width: 420px;
+      aspect-ratio: 1 / 1;
       background: transparent;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
+    /* BOTTOM */
+    .bottom {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-      .left {
-        flex: none;
-        height: 35%;
-      }
+    .since {
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
 
-      .right {
-        height: 65%;
-      }
-
-      .quote {
-        font-size: 1.2rem;
-      }
-
-      .counter {
-        font-size: 0.95rem;
-      }
+    .counter {
+      font-size: clamp(1rem, 3.8vw, 1.3rem);
+      font-weight: 500;
     }
   </style>
 </head>
+
 <body>
 
-  <div class="container">
-    <div class="left">
-      <div class="quote">
-        I would choose you in every life
-      </div>
+  <!-- TOP -->
+  <div class="top-text">
+    I would choose you in every life
+  </div>
 
-      <div class="counter">
-        We've loved each other since<br>
-        <span id="time"></span>
-      </div>
-    </div>
+  <!-- CENTER -->
+  <div class="animation-container">
+    <canvas id="fireworks"></canvas>
+  </div>
 
-    <div class="right">
-      <canvas id="canvas"></canvas>
-    </div>
+  <!-- BOTTOM -->
+  <div class="bottom">
+    <div class="since">We've loved each other since</div>
+    <div class="counter" id="counter"></div>
   </div>
 
   <script>
     /* ===== COUNTER ===== */
-    const startDate = new Date("2023-12-03T00:00:00"); // <-- CAMBIA ESTA FECHA SI QUERÉS
-    const timeEl = document.getElementById("time");
+    const startDate = new Date("2023-12-03T00:00:00"); // AJUSTÁ ESTA FECHA
 
     function updateCounter() {
       const now = new Date();
-      let diff = Math.max(0, now - startDate);
+      let diff = Math.floor((now - startDate) / 1000);
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      diff %= (1000 * 60 * 60 * 24);
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      diff %= (1000 * 60 * 60);
-      const minutes = Math.floor(diff / (1000 * 60));
-      const seconds = Math.floor((diff / 1000));
+      const days = Math.floor(diff / 86400);
+      diff %= 86400;
+      const hours = Math.floor(diff / 3600);
+      diff %= 3600;
+      const minutes = Math.floor(diff / 60);
+      const seconds = diff % 60;
 
-      timeEl.textContent =
-        `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+      document.getElementById("counter").textContent =
+        `${days} days · ${hours} hours · ${minutes} minutes · ${seconds} seconds`;
     }
 
     setInterval(updateCounter, 1000);
     updateCounter();
 
-    /* ===== HEART FIREWORKS ===== */
-    const canvas = document.getElementById("canvas");
+    /* ===== FIREWORKS HEART ===== */
+    const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
 
     function resize() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      canvas.width = canvas.offsetWidth * devicePixelRatio;
+      canvas.height = canvas.offsetHeight * devicePixelRatio;
+      ctx.scale(devicePixelRatio, devicePixelRatio);
     }
-    window.addEventListener("resize", resize);
+
     resize();
+    window.addEventListener("resize", resize);
 
-    class Particle {
-      constructor(x, y, vx, vy, life) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.life = life;
-        this.alpha = 1;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.vy += 0.02;
-        this.life--;
-        this.alpha = this.life / 60;
-      }
-
-      draw() {
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = "#ff4d6d";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 2.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
+    function heartPoints(t) {
+      return {
+        x: 16 * Math.pow(Math.sin(t), 3),
+        y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
+      };
     }
 
     let particles = [];
 
-    function heartExplosion(cx, cy) {
-      for (let i = 0; i < 80; i++) {
+    function spawnHeart() {
+      particles = [];
+      for (let i = 0; i < 160; i++) {
         const t = Math.random() * Math.PI * 2;
-        const r = 12 * (1 - Math.sin(t));
-        const x = r * Math.cos(t);
-        const y = -r * Math.sin(t);
-
-        particles.push(
-          new Particle(
-            cx,
-            cy,
-            x * 0.15,
-            y * 0.15,
-            60
-          )
-        );
+        const p = heartPoints(t);
+        particles.push({
+          x: canvas.offsetWidth / 2,
+          y: canvas.offsetHeight / 2,
+          vx: p.x * 0.6,
+          vy: p.y * 0.6,
+          life: 80
+        });
       }
     }
 
-    function loop() {
+    function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particles = particles.filter(p => p.life > 0);
       particles.forEach(p => {
-        p.update();
-        p.draw();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(216, 27, 96, 0.8)";
+        ctx.fill();
       });
 
-      requestAnimationFrame(loop);
+      particles = particles.filter(p => p.life > 0);
+
+      requestAnimationFrame(animate);
     }
 
-    // Auto explosions
-    setInterval(() => {
-      const x = canvas.width * (0.3 + Math.random() * 0.4);
-      const y = canvas.height * (0.3 + Math.random() * 0.4);
-      heartExplosion(x, y);
-    }, 900);
-
-    loop();
+    spawnHeart();
+    setInterval(spawnHeart, 1600);
+    animate();
   </script>
+
 </body>
 </html>
